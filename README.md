@@ -3,7 +3,7 @@ What
 What is it? A remote controller for Quntis LED Bar based on an RFNano (Arduino nano with a NRF24L01 on board).
 
 What is it? It's a DIY remote controller for the Quntis Monitor Light Bar PRO+:  
-!(/Images/Quntis LED bar.jpg)
+![Quntis Lightbar](Images/Quntis LED bar.jpg)
 	
 
 
