@@ -27,15 +27,14 @@ The main reason though, is that it was a good opportunity to learn how to revers
 Note: the sequency of steps written down here are not necessarily how the steps actually where preformed, because this kind of reverse engineering is a iterative process and for every piece of information you find you sometimes have to go back and do something again.
 
 The first step is take it apart and see what's inside. There is a PCB with two unmarked IC's:
-	![](Images/Top%20PCB.jpeg)
+![](Images/Top%20PCB.jpeg)
+
 
 Although the IC's don't have markings, we can guess that U1 (larger IC to the left) is probably some sort of microcontroller and U2 (to IC next to the wiggly PCB trace) is some sort of transmitter. The wiggly traces are the antenna.
 
 When we zoom in and reverse the PCB a little bit, we see how the RF transmitter is connected to the microcontroller:
 ![](Images/Top%20PCB%20Detail.png)
 
-
-	
 
 The pin one location of U2 is upper right.
 
@@ -46,27 +45,28 @@ From the size of the antenna we can estimate that the transmit frequency is high
 A good start to find the used frequencies is to find the FCC ID and search in the FCC database, but this device does not have a FCC id (although it is 'FCC compliant).
 
 I also did a VNA measurement on the antenna by removing C5 and adding a coax to it:
-	
+![](Images/VNA%20Measurement%20setup.jpg)
 
-
-	
+![](Images/VNA%20measurement%20result.png)
 
 We observe that there is a dip at 2.14GHz, not quite 2.4, but maybe this is not the correct way to measure such a PCB antenna. But I'm convinced that the RF transmitter operates in the 2.4GHz band.
 
 Now we have to find what for transmitter is used. We do this by searching the internet for transmitter IC's in a SO8 package and look for the ones that have the same pinout.
 This is a tedious process and took some time (a span of a few day's), but eventually I found a match in the XN297:
 
+![](Images/XN297%20pinout.png)
 	
-	https://www.panchip.com/static/upload/file/20190916/1568621331607821.pdf
+[XN297 datasheet](https://www.panchip.com/static/upload/file/20190916/1568621331607821.pdf)
 	
 From the PDF:
-	XN297L is a single chip 2.4GHz RF transceiver designed for operation in the world wide ISM frequency band from 2.400 to 2.483GHz. XN297L with an embedded baseband protocol engine, is suitable for ultra-low power wireless applications. 
+> XN297L is a single chip 2.4GHz RF transceiver designed for operation in the world wide ISM frequency band from 2.400 to 2.483GHz. XN297L with an embedded baseband protocol engine, is suitable for ultra-low power wireless applications. 
 
 So I'm pretty sure this is the one that is used here.
 
 Side note on the XN297:
-	It's a Chinese clone of the Nordic NRF24L01 and is used in many Chinese remote controls for RC cars and drones. This comes in handy later on!
-	There are also other clones of this chip.
+
+It's a Chinese clone of the Nordic NRF24L01 and is used in many Chinese remote controls for RC cars and drones. This comes in handy later on!
+There are also other clones of this chip.
 
 Now we can see that the pins 1-3 are SPI lines and we can connect a Logic analyzer to it. We can now correlate it with the XN297 datasheet to see if it is the same protocol.
 Note: the SO8 version of the XN297 only has a data out pin (MOSI), so there is one way communication!
