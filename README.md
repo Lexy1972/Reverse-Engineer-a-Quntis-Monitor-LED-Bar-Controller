@@ -1,38 +1,39 @@
-What
+# What
 
 What is it? A remote controller for Quntis LED Bar based on an RFNano (Arduino nano with a NRF24L01 on board).
 
 What is it? It's a DIY remote controller for the Quntis Monitor Light Bar PRO+:  
-![Quntis Lightbar](Images/Quntis LED bar.jpg)
+![Screenshot](Images/Quntis%20LED%20bar.jpg)
 	
 
 
 It's based on a RFNano (Arduino nano with a NRF24L01 on board) and a custom 3D printed case with two encoders to control the brightness and color:
 
+![3D Printed Remote](Images/3D%20Printed%20Remote.jpeg)
 	
 
 The top dial (with the dip) controls the dimming, the outer dial controls the color temperature.
 
 
-Why?
+# Why?
 
 It comes with a remote controller, so why make one? Well, I didn't like the original one. For one, the dim control is the outer ring and you have to turn it too much to dim for a reasonable amount. And I think the upper control should dim and the outer ring can be used for the color temperature. 
 
 The main reason though, is that it was a good opportunity to learn how to reverse engineer such a RF device with an SDR tool like the HackRF.
 
 
-How
+# How
 
 Note: the sequency of steps written down here are not necessarily how the steps actually where preformed, because this kind of reverse engineering is a iterative process and for every piece of information you find you sometimes have to go back and do something again.
 
 The first step is take it apart and see what's inside. There is a PCB with two unmarked IC's:
-
-	
-	Note: the outer encoder is already removed.
+	![](Images/Top%20PCB.jpeg)
 
 Although the IC's don't have markings, we can guess that U1 (larger IC to the left) is probably some sort of microcontroller and U2 (to IC next to the wiggly PCB trace) is some sort of transmitter. The wiggly traces are the antenna.
 
 When we zoom in and reverse the PCB a little bit, we see how the RF transmitter is connected to the microcontroller:
+![](Images/Top%20PCB%20Detail.png)
+
 
 	
 
