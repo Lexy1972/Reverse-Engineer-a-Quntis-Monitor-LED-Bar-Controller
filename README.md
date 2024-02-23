@@ -72,17 +72,17 @@ Now we can see that the pins 1-3 are SPI lines and we can connect a Logic analyz
 Note: the SO8 version of the XN297 only has a data out pin (MOSI), so there is one way communication!
 
 Here we see the data when pressing the on/off button:
-
+![](Images/Logic%20Analyzer%20overview.png)
 	
 
 The first part is the configuration of the XN297, the second part is sending the RF data 6x. We can see that data has been send at the RF channel, which is connected to a 2.4GHz antenna and a RF diode detector. This signal is amplified (~2000x) so the Logic Analyzer can see it.
 
 This is the config part:
-
+![](Images/Logic%20Analyzer%20Config.png)
 	
 
 The data burst (one block):
-
+![](Images\Logic%20Analyzer%20Config%20data%20burst.png)
 	
 
 I'll highlight the interesting parts of the config like data length, mode and channel (freq).
@@ -90,59 +90,61 @@ I'll highlight the interesting parts of the config like data length, mode and ch
 First we need to see how the SPI protocol is used (see XN297 datasheet: https://www.panchip.com/static/upload/file/20190916/1568621331607821.pdf)
 
 In the XN297, the SPI commands are one command byte and some data bytes depending on the command.
-
+![](Images/XN297%20SPI%20Commands.png)
 	
 
 The write command byte is identified by the upper tree bits being 001. 
 
 The XN297 can operate in different modes, but this implementation uses the normal mode:
-	
+![](Image/XN297 Normal Burst.png	))
 
 We can see this by looking at the config and see where the above mentioned registers are written.
 
-	EN_AA => cmd 0x21: 0x00 written
-		
-	
-	SETUP_RETR => cmd 0x24: 0x00 written
-		
-	
-	DYNPD => cmd 0x3C: 0x00 written
-		
+EN_AA => cmd 0x21: 0x00 written
 
-	FEATURE => cmd 0x3D: 0x20 written
-		
+![](Images/Logic%20Analyzer%20cmd%200x21.png)
+	
+SETUP_RETR => cmd 0x24: 0x00 written
+
+![](Images/Logic%20Analyzer%20cmd%200x24.png)
+
+DYNPD => cmd 0x3C: 0x00 written
+
+![](Images/Logic%20Analyzer%20cmd%200x3c.png)
+
+FEATURE => cmd 0x3D: 0x20 written
+
+![](Images/Logic%20Analyzer%20cmd%200x3d.png)
 	
 Let's look for the address length command (cmd:0x23):
 
+![](Images/SPI%20cmd%200x23.png)
 	
+Data is 0x03:
+![](Images/Logic%20Analyzer%20cmd%200x03.png)	
 
-	Data is 0x03:
-	
-
-	So, there are 5 address bytes configured.
+So, there are 5 address bytes configured.
 	
 Now see the transmit channel (cmd 0x25):
+![](Images/SPI%20cmd%200x25.png)
+So, the data is 0x02, so channel 2 @ 2402 MHz is used.
 
-	
 
-	
-
-	So, the data is 0x02, so channel 2 @ 2402 MHz is used.
-	
 Now the data rate (cmd 0x26):
+![](Images/SPI%20cmd%200x26.png)
 	
+![](Images/Logic%20Analyzer%20cmd%200x26.png)
 	
+The data here is 0x2c (00101100). Bits 7:6 are 00, so the data rate is 1 Mbps. We can also see the TX power is set to 101100 => 5dBm.
 
-	
 
-	The data here is 0x2c (00101100). Bits 7:6 are 00, so the data rate is 1 Mbps. We can also see the TX power is set to 101100 => 5dBm.
-	
+
 There is also a CONFIG register (cmd 0x20):
+![](Images/SPI%20cmd%200x20.png)
 	
+![](Images/Logic%20Analyzer%20cmd%200x20.png)
 	
-	
-	
-	Data is 0x8E (1000 1110). Bits 1:3 are 1, so CRC is enabled and has 2 bytes.
+Data is 0x8E (1000 1110). Bits 1:3 are 1, so CRC is enabled and has 2 bytes.
 	
 So, we have the following configuration:
 
