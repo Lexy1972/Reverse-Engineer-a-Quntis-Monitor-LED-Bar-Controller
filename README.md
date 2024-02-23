@@ -148,22 +148,23 @@ Data is 0x8E (1000 1110). Bits 1:3 are 1, so CRC is enabled and has 2 bytes.
 	
 So, we have the following configuration:
 
-	Mode	Normal mode
-	TX freq	2402 MHz
-	Data rate	1 Mbps
-	Address	5 bytes
-	CRC	2 Bytes
+| Param     | Value       |
+| ---       | ---         |
+| Mode      | Normal mode |
+| TX freq   | 2402 MHz    |
+| Data rate | 1 Mbps      |
+| Address   | 5 bytes     |
+| CRC       | 2 Bytes     |
 
 Note that there is no data length configuration for the transmitter. The data sheet mentions that the transmitted data length is set by the number of data bytes that are clocked in to the chip.
 	
 Let's have a look at the data:
 
+![](Images/Logic%20Analyzer%20config%20detail.png)
 	
-
 The first three commands are to flush the buffers and interrupts, than the data is clocked in via command 0xA0. We can see that there are 6 data bytes (this is for pressing the on/off button press):
 
 	01 04 CF 31 61 20
-	
 
 When pressing on/off a few times, we can see a pattern:
 
@@ -174,12 +175,14 @@ When pressing on/off a few times, we can see a pattern:
 	01 04 CF 31 66 20
 	
 Turning the dim up:
+
 	01 04 CF 31 81 48
 	01 04 CF 31 82 48
 	01 04 CF 31 84 48
 	01 04 CF 31 86 48
 
 Turning the dim down:
+
 	01 04 CF 31 A3 40
 	01 04 CF 31 A5 40
 	01 04 CF 31 A6 40
@@ -204,17 +207,18 @@ The next byte is incremented every send. This is probably used by the receiver t
 The last byte is the specific command. We now can deduce the following commands:
 
 
-	Command	Byte
-	On/off	0x20
-	Color to cold	0x30
-	Color to warm	0x38
-	Dim up	0x40
-	Dim down	0x48
+| Command       | Byte |
+| - | - |
+| On/off        | 0x20 |
+| Color to cold | 0x30 |
+| Color to warm | 0x38 |
+| Dim up	| 0x40 |
+| Dim down	| 0x48 |
 
 Now we have a complete insight of the used protocol to communicate via a XN297 to the Quntis light bar, but I really want also use a SDR to get the data, so let's do that.
 
 
-SDR
+# SDR
 
 So, I bought a HackRF and started messing around with the known SDR tools as sdr++ and Universal Radio hacker to see if I could catch a glimpse of the spectrum of the XN297. But that was harder than it seems. This is mainly because I don't know exactly what to look for and the frequency that the remote uses (2402MHz) is quit a busy region of the spectrum in my environment. I managed eventually to record a signal of the On/Off press with the Universal Radio Hacker tool and when replayed, the light bar responded by turning off. 
 
@@ -222,8 +226,7 @@ So I started with GNU Radio Companion (GRC) to see if I could receive and decode
 
 To make things a little easier for me, I decided to use a RFNano (which is an Arduino nano with a NRF24L01 chip on board) with some simple test code that transmitted fixed data, to see if I could make a receiver in GNU radio. And eventually I got it working. With that I came up with this flow diagram that demodulates the RF into a bit stream and that bitstream gets send to a separate process, written in C#, that takes the bit stream for decoding:
 
-	
-
+![](Images/GRC%20flow.png)
 
 The Low Pass Filter filters the output of the HackRF at 1MHz, then the signal gets passed to a Power Squelch. This adds a tag (squelch_sob: Start Of Block) to the stream if the power of the signal reaches a certain threshold and the QT GUI stuff can trigger on this tag.
 
@@ -235,9 +238,7 @@ We the use a ZMQ PUB Sink block to send the bit stream to a C# process by the Ze
 
 When run, the UI looks like:
 
-	
-	
-
+![](Images/GRC%20Dialog.png)
 
 Here we see the Signal and the IQ Diagram, which we can use to see if we receive the signal correctly.
 
@@ -245,15 +246,16 @@ In the Bit stream diagram we see the actual demodulated bit stream. We see also 
 
 The C# side looks like this:
 
-	
+![](Images/C# decoder main.png)
 
 The NetMQ lib is used here to receive the data stream. The data is received as one bit per byte. I've made a shift register class (BitShiftArray) that is used to shift in the bits and determine if the preamble is in the data stream. The bits are added with bits.AddBit() (line 520). This function returns true if a preamble is at the end (MSB) of the shift register. This means that the rest of the shift register contains the data we want.
 
 When we have received all bits, we decode them. 
 
-Unfortunately, the XN297 scrambles the data before sending it out, so the received data was not what we expected. But thanks to the internet, we have made a descrambling function. The XN297 is apparently used as RC controller for many Drones and RC Cars, so people already made decoding for this (see for example:https://github.com/goebish/nrf24_multipro/tree/master/nRF24_multipro).  
+Unfortunately, the XN297 scrambles the data before sending it out, so the received data was not what we expected. But thanks to the internet, we have made a descrambling function. The XN297 is apparently used as RC controller for many Drones and RC Cars, so people already made decoding for this (see for example: https://github.com/goebish/nrf24_multipro/tree/master/nRF24_multipro).  
 
 The data received for pressing the on/off button once looks like this:
+
 	|-------- received/scrambled --------|     |---------- descrambled/decoded ---------|
 	|                                    |     |- address --|   |----- data ------| |crc|
 	49 80 4A CB A5 3C C5 95 81 04 88 DD B0  >> AA 31 01 21 20 | 01 04 CF 31 55 20 | B0 DD
@@ -266,33 +268,14 @@ We also see that the data matches the data that we saw when using the Logic Anal
 
 Now let's make a controller using the RFNano!
 
-Controller using RFNano (NRF24L01)
+# Controller using RFNano (NRF24L01)
 
 I've already mentioned the XN297 emulation using a NRF24L01 example: https://github.com/goebish/nrf24_multipro : XN297_emu.ino.
 This code is as base to make an own implementation using the 'standard' Arduino library for the NRF24L01 (https://github.com/nRF24/RF24).
 
 I've made a new class XN297 with the RF24 as it's base:
 
-	#include <Arduino.h>
-	#include <RF24.h>
-	#include <nRF24L01.h>
-	class XN297: public RF24
-	{
-	public:
-	    XN297(){};
-	    XN297(rf24_gpio_pin_t _cepin, rf24_gpio_pin_t _cspin);
-	
-	    void XN297_SetTXAddr(const uint8_t* addr, uint8_t len);
-	    uint8_t XN297_WritePayload(uint8_t* msg, uint8_t len);
-	    static void HexDump(byte* buf, byte len);
-	    long GetPacketCount() { return _nrOfPackets;}
-	    void ResetPacketCount() {_nrOfPackets = 0;}
-	
-	private:
-	    uint16_t crc16_update(uint16_t crc, unsigned char a);
-	    uint8_t bit_reverse(uint8_t b_in);
-	    long _nrOfPackets;
-	};
+![](Images/Class%20XN297.png)
 
 This class handles all the scrambling and emulation stuff to make the nRF24L01 transmit like a XN297.
 There is some modification to the RF24 library code needed, because we need to use the private marked function RF24::write_register() in our XN297_SetTXAddr() function.
