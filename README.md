@@ -281,35 +281,13 @@ This class handles all the scrambling and emulation stuff to make the nRF24L01 t
 There is some modification to the RF24 library code needed, because we need to use the private marked function RF24::write_register() in our XN297_SetTXAddr() function.
 To make this work, we need to mark it as protected in the RF24.h file:
 
-	
+![](Images/RF24%20modification.png)
 
 Now we can use it in our XN297 class.
 
 Another class is made to handle the Quntis protocol:
 
-	class QuntisControl
-	{
-	public:
-	    QuntisControl();
-	    bool begin();
-	    void OnOff();
-	    void Dim(bool up, bool repeat = true);
-	    void Color(bool up, bool repeat = true);
-	    void ShowNrOfPacketsSend();
-	    void ResetNrOfPacketsSend();
-	
-	private:
-	    void SendCommand(byte cmd, bool repeat);
-	
-	private:
-	    XN297 _radio;
-	    byte _address[ADDRESS_LENGTH] = {0x20, 0x21, 0x01, 0x31, 0xAA};
-	
-	    //                               |------ Fixed -------| |Idx|  |cmd|
-	    byte _payload[PAYLOAD_LENGTH] = {0x01, 0x04, 0xCF, 0x31, 0x00, 0x00};
-	    byte _index;
-	};
-	
+![](Images/Class%20QuntisControl.png)
 
 Here are the address and the fixed part of the data defined. I don't know if this is universal for all devices (probably not).
 
@@ -330,31 +308,14 @@ A simple serial control is also implemented:
 
 The controller send back the letter it has received or a ? if it is unknown.
 
-
-3D Design
+# 3D Design
 
 The 3D design is done in Fusion 360, the design files are here:[link]
 
-	
+![](Images/3D%20explode%20view.png)
 
-	
+![](Images/3D%20section%20view.png)
+
 
 It consists of two normal encoders (EC11) and a simple gear system is used to make it concentrical. One of the key design 'features' here is that the top dial is used to dim and the outer ring is used to change the light color/temperature.
 
-
-	
-
-	1. Take it apart
-	2. Look for FCC Id's
-	3. Look at the antenna for freq (range)
-	4. Look at the IC's (no marking...)
-	5. Figure out the pinout of the TX ic
-	6. Look for similar'
-	7. Found XN297
-	8. Look at data with Logic Analyzer
-	9. Make GnuRadio recv with C# decoder
-	10. Correlate SPI data with RF data (Scrambled!)
-	11. Find out that people on the Inet already made an imp for the nrf24 to emulate the XN297
-	12. Implement this with a RFNano.
-	13. Done
-![image](https://github.com/Lexy1972/Quntis-Monitor-LED-Bar-Controller/assets/101123141/06263afc-7fec-474f-a388-ad8e3467afc3)
