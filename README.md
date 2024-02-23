@@ -1,11 +1,8 @@
 # What
 
-What is it? A remote controller for Quntis LED Bar based on an RFNano (Arduino nano with a NRF24L01 on board).
+What is it? It's a DIY remote controller for the Quntis Monitor Light Bar PRO+ (Typenr.: LI-HY-208-BK):  
 
-What is it? It's a DIY remote controller for the Quntis Monitor Light Bar PRO+:  
 ![Screenshot](Images/Quntis%20LED%20bar.jpg)
-	
-
 
 It's based on a RFNano (Arduino nano with a NRF24L01 on board) and a custom 3D printed case with two encoders to control the brightness and color:
 
@@ -17,7 +14,7 @@ The top dial (with the dip) controls the dimming, the outer dial controls the co
 
 # Why?
 
-It comes with a remote controller, so why make one? Well, I didn't like the original one. For one, the dim control is the outer ring and you have to turn it too much to dim for a reasonable amount. And I think the upper control should dim and the outer ring can be used for the color temperature. 
+The Quntis Lightbar comes with a remote controller, so why make one? Well, I didn't like the original one. For one, the dim control is the outer ring and you have to turn it too much to dim for a reasonable amount. And I think the upper control should dim and the outer ring can be used for the color temperature. 
 
 The main reason though, is that it was a good opportunity to learn how to reverse engineer such a RF device with an SDR tool like the HackRF.
 
