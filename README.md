@@ -243,7 +243,7 @@ In the Bit stream diagram we see the actual demodulated bit stream. We see also 
 
 The C# side looks like this:
 
-![](Images/C# decoder main.png)
+![](Images/C%23%20decoder%20main.png)
 
 The NetMQ lib is used here to receive the data stream. The data is received as one bit per byte. I've made a shift register class (BitShiftArray) that is used to shift in the bits and determine if the preamble is in the data stream. The bits are added with bits.AddBit() (line 520). This function returns true if a preamble is at the end (MSB) of the shift register. This means that the rest of the shift register contains the data we want.
 
