@@ -93,7 +93,7 @@ In the XN297, the SPI commands are one command byte and some data bytes dependin
 The write command byte is identified by the upper tree bits being 001. 
 
 The XN297 can operate in different modes, but this implementation uses the normal mode:
-![](Image/XN297 Normal Burst.png	))
+![](Image/XN297%20Normal%20Burst.png)
 
 We can see this by looking at the config and see where the above mentioned registers are written.
 
