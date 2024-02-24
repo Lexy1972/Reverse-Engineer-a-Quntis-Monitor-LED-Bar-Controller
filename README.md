@@ -1,10 +1,10 @@
 # What
 
-What is it? It's a DIY remote controller for the Quntis Monitor Light Bar PRO+ (Typenr.: LI-HY-208-BK):  
+What is it? It's a DIY remote controller for the Quntis Monitor Light Bar PRO+ (Typenr.: LI-HY-208-BK). This light bar can be used to lit the desk in front of your monitor. It comes with a remote controller to turn it on/off and control the dimming and light color:  
 
 ![Screenshot](Images/Quntis%20LED%20bar.jpg)
 
-It's based on a RFNano (Arduino nano with a NRF24L01 on board) and a custom 3D printed case with two encoders to control the brightness and color:
+I've made a replacmend for the remote controller, based on a RFNano (Arduino nano with a NRF24L01 on board) and a custom 3D printed case with two encoders to control the brightness and color:
 
 ![3D Printed Remote](Images/3D%20Printed%20Remote.jpeg)
 	
