@@ -322,3 +322,20 @@ The 3D design is done in Fusion 360, the design files are here:[link]
 
 It consists of two normal encoders (EC11) and a simple gear system is used to make it concentrical. One of the key design 'features' here is that the top dial is used to dim and the outer ring is used to change the light color/temperature.
 
+# Final Build
+
+The final product looks like this:
+
+![](Images/3D%20Printed%20Remote.jpeg)
+
+The obligatory inside pictures:
+![](Images/Inside-1.JPEG)
+
+The inside is filled with nuts to give some heft to the body:
+![](Images/Inside-2.JPEG)
+
+![](Images/Inside-3.JPEG)
+
+
+
+
