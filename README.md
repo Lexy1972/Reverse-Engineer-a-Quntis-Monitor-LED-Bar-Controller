@@ -1,10 +1,10 @@
 # What
 
-What is it? It's a DIY remote controller for the Quntis Monitor Light Bar PRO+ (Typenr.: LI-HY-208-BK):  
+What is it? It's a DIY remote controller for the Quntis Monitor Light Bar PRO+ (Typenr.: LI-HY-208-BK). This light bar can be used to lit the desk in front of your monitor. It comes with a remote controller to turn it on/off and control the dimming and light color:  
 
 ![Screenshot](Images/Quntis%20LED%20bar.jpg)
 
-It's based on a RFNano (Arduino nano with a NRF24L01 on board) and a custom 3D printed case with two encoders to control the brightness and color:
+I've made a replacmend for the remote controller, based on a RFNano (Arduino nano with a NRF24L01 on board) and a custom 3D printed case with two encoders to control the brightness and color:
 
 ![3D Printed Remote](Images/3D%20Printed%20Remote.jpeg)
 	
@@ -93,7 +93,7 @@ In the XN297, the SPI commands are one command byte and some data bytes dependin
 The write command byte is identified by the upper tree bits being 001. 
 
 The XN297 can operate in different modes, but this implementation uses the normal mode:
-![](Image/XN297 Normal Burst.png	))
+![](Image/XN297%20Normal%20Burst.png)
 
 We can see this by looking at the config and see where the above mentioned registers are written.
 
@@ -225,6 +225,8 @@ To make things a little easier for me, I decided to use a RFNano (which is an Ar
 
 ![](Images/GRC%20flow.png)
 
+This flow can be found here: [XN297 NRF24 recv for HackRF.](GNU-Radio/XN297%20NRF24%20recv%20for%20HackRF.grc)
+
 The Low Pass Filter filters the output of the HackRF at 1MHz, then the signal gets passed to a Power Squelch. This adds a tag (squelch_sob: Start Of Block) to the stream if the power of the signal reaches a certain threshold and the QT GUI stuff can trigger on this tag.
 
 The signal gets demodulated by the GFSK Demod block. The important parameter here is the Samples/Symbol. We need to set it according to the following: samp_rate/data_rate. The sample_rate is set to 8MSP/sec and the datarate of the XN297 in the Quntis is 1Mbaud, so the Samples per Symbol is 8.
@@ -244,6 +246,8 @@ In the Bit stream diagram we see the actual demodulated bit stream. We see also 
 The C# side looks like this:
 
 ![](Images/C%23%20decoder%20main.png)
+
+The C# project is here: [XN297Decoder_V3](Code/XN297Decoder_V3)
 
 The NetMQ lib is used here to receive the data stream. The data is received as one bit per byte. I've made a shift register class (BitShiftArray) that is used to shift in the bits and determine if the preamble is in the data stream. The bits are added with bits.AddBit() (line 520). This function returns true if a preamble is at the end (MSB) of the shift register. This means that the rest of the shift register contains the data we want.
 
@@ -269,6 +273,8 @@ Now let's make a controller using the RFNano!
 
 I've already mentioned the XN297 emulation using a NRF24L01 example: https://github.com/goebish/nrf24_multipro : XN297_emu.ino.
 This code is as base to make an own implementation using the 'standard' Arduino library for the NRF24L01 (https://github.com/nRF24/RF24).
+
+The code is here: [Quntis LED bar Controller](Code/Quntis%20LED%20bar%20Controller)
 
 I've made a new class XN297 with the RF24 as it's base:
 
